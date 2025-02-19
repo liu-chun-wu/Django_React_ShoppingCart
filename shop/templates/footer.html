@@ -1,0 +1,24 @@
+<footer class="footer_footer">
+    <div class="footer_div">
+        <p class="footer_p" id="about_us_below"></p>
+        <p class="footer_p" id="contact_us_below">
+        </p>
+        <span id="id_below" data-id="" style="display:none"></span>
+    </div>
+</footer>
+<script>
+    const _apiUrl_footer = '/footer/api/';
+    function loadFooter_below() {
+        fetch(_apiUrl_footer)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('about_us_below').textContent = 'About us : ' + data[0].about_us;
+                document.getElementById('contact_us_below').textContent = 'Contact us : ' + data[0].contact_us;
+                document.getElementById('id_below').setAttribute('data-id', data[0].id);
+            })
+            .catch(error => console.error('Error loading footer info:', error));
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        loadFooter_below();
+    });
+</script>

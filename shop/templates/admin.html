@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <!-- 引入標頭 -->
+    {% include "header.html" %}
+
+    <!-- 主要內容區域 -->
+    <main>
+        <!-- 防止 header 遮擋內容 -->
+        <h2>放這行是因為下面的h2會被header擋住</h2>
+
+        <!-- 商品管理區域 -->
+        <h2>目前已存在的商品</h2>
+        <section class="admin_product-container">
+            <div class="admin_product-list" id="product-list">
+                <!-- 商品項目會通過 JavaScript 從後端 API 動態載入 -->
+            </div>
+        </section>
+
+        <!-- 編輯/新增商品表單 -->
+        <section class="admin_add-product">
+            <h2>編輯/新增商品</h2>
+            <div id="add-product-form" class="admin_add_form">
+                <label for="product_name">商品名稱</label>
+                <input type="text" id="product_name" name="product_name" required>
+
+                <label for="introduction">介紹</label>
+                <textarea id="introduction" name="introduction" required></textarea>
+
+                <label for="product_quantity">數量</label>
+                <input type="number" id="product_quantity" name="product_quantity" required>
+
+                <label for="product_price">價格</label>
+                <input type="number" id="product_price" name="product_price" required>
+
+                <input type="hidden" id="product_id" name="product_id" value="">
+
+                <div class="admin_edit_button_group">
+                    <button id="product-add-button" class="admin_add-button" type="button">確認</button>
+                    <button id="product-reset-button" class="admin_add-button" type="button">重設</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 管理員帳號列表 -->
+        <h2>目前已存在的帳號</h2>
+        <section class="admin_account-container">
+            <div class="admin_account-list" id="account-list">
+                <!-- 帳號項目會通過 JavaScript 從後端 API 動態載入 -->
+            </div>
+        </section>
+
+        <!-- 編輯/新增帳號表單 -->
+        <section class="admin_add-account">
+            <h2>編輯/新增管理員帳號</h2>
+            <div id="add-account-form" class="admin_add_form">
+                <label for="acc_name">帳號名稱</label>
+                <input type="text" id="acc_name" name="acc_name" required>
+
+                <label for="password">密碼</label>
+                <input type="password" id="password" name="password" required>
+
+                <input type="hidden" id="account_id" name="account_id" value="">
+
+                <div class="admin_edit_button_group">
+                    <button id="account-add-button" class="admin_add-button" type="button">確認</button>
+                    <button id="account-reset-button" class="admin_add-button" type="button">重設</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer 資訊編輯區域 -->
+        <section class="admin_footer-info">
+            <h2>更新 Footer 資訊</h2>
+            <div class="admin_add_form">
+                <label for="about_us">關於我們</label>
+                <textarea id="about_us" name="about_us" required></textarea>
+
+                <label for="contact_us">聯絡我們</label>
+                <textarea id="contact_us" name="contact_us" required></textarea>
+
+                <input type="hidden" id="footer_id" name="footer_id" value="">
+
+                <div class="admin_edit_button_group">
+                    <button id="footer-edit-button" class="admin_add-button" type="button">確認</button>
+                    <button id="footer-reset-button" class="admin_add-button" type="button">重設</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 登出按鈕 -->
+        <section class="admin_logout-container">
+            <a href="{% url 'admin_logout' %}" class="admin_logout-button">Logout</a>
+        </section>
+    </main>
+
+    <!-- 引入頁尾 -->
+    {% include "footer.html" %}
+
+    <script>
+        // 頁面加載時加載各元素
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAccounts();
+            loadProducts()
+            loadFooter();
+        });
+
+        // 設定 admin API 的 URL
+        const apiUrl_admin = '/admin/api/';
+
+        // 加載帳號
+        function loadAccounts() {
+            fetch(apiUrl_admin)
+                .then(response => response.json())
+                .then(data => {
+                    const accountList = document.getElementById('account-list');
+                    accountList.innerHTML = ''; // 清空列表
+                    data.forEach(account => {
+                        accountList.innerHTML += `
+                        <div class="admin_account-item">
+                            <div>
+                                <strong>帳號名稱：</strong><span class="admin_account-name">${account.acc_name}</span>
+                            </div>
+                            <div>
+                                <strong>密碼：</strong><span class="admin_account-password">${account.password}</span>
+                            </div>
+                            <div class="admin_button-group">
+                                <button onclick="switchAccountSubmit(${account.id})" class="admin_edit-button">編輯</button>
+                                <button onclick="deleteAccount(${account.id})" class="admin_delete-button">刪除</button>
+                            </div>
+                        </div>
+                    `;
+                    });
+                })
+                .catch(error => console.error('Error loading accounts:', error));
+
+            // 頁面載入時默認設置表單為新增帳號
+            document.getElementById('account-add-button').onclick = AddAccount;
+            document.getElementById('account-reset-button').onclick = ResetAdminForm;
+        }
+
+        // 新增帳號
+        function AddAccount() {
+            const acc_name = document.getElementById('acc_name').value;
+            const password = document.getElementById('password').value;
+
+            if (acc_name == '' || password == ' ') {
+                alert('帳號和密碼不能為空');
+                return;
+            }
+
+            fetch(apiUrl_admin, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django 的 CSRF Token
+                },
+                body: JSON.stringify({ acc_name, password })
+            })
+                .then(response => response.json().then(data => ({ status: response.status, body: data })))  // 解析響應
+                .then(({ status, body }) => {
+                    if (status === 201) {  // 成功創建的狀態碼
+                        // 新增成功後重新加載帳號列表
+                        loadAccounts();
+                        // 清空表單
+                        ResetAdminForm();
+                    } else if (status === 400 && body.error) {
+                        // 顯示帳號已存在的提示
+                        alert(body.error);  // 提示用戶帳號已存在
+                    } else {
+                        alert('新增帳號失敗，請稍後再試。');  // 顯示通用錯誤消息
+                    }
+                })
+                .catch(error => console.error('Error adding account:', error));
+        }
+
+        // 編輯帳號
+        function editAccount() {
+            const acc_name = document.getElementById('acc_name').value;
+            const password = document.getElementById('password').value;
+            const account_id = document.getElementById('account_id').value;
+
+            if (acc_name == '' || password == ' ') {
+                alert('帳號和密碼不能為空');
+                return;
+            }
+
+            fetch(`${apiUrl_admin}${account_id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ acc_name, password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        // 更新成功後重新加載帳號列表
+                        loadAccounts();
+                        // 清空表單並重置表單提交動作為新增帳號
+                        ResetAdminForm();
+                    } else {
+                        console.error('Failed to edit account:', data);
+                    }
+                })
+                .catch(error => console.error('Error editing account:', error));
+        }
+
+        // 刪除帳號
+        function deleteAccount(accountId) {
+            if (confirm('確定要刪除這個帳號嗎？')) {
+                fetch(`${apiUrl_admin}${accountId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                    .then(response => {
+                        if (response.status === 204) {
+                            loadAccounts();  // 刪除成功後重新加載帳號列表
+                        } else {
+                            console.error('Failed to delete account');
+                        }
+                    })
+                    .catch(error => console.error('Error deleting account:', error));
+            }
+        }
+
+        // 設定帳號表單 onclick 為 editAccount 並填充資訊
+        function switchAccountSubmit(accountId) {
+            fetch(`${apiUrl_admin}${accountId}/`)
+                .then(response => response.json())
+                .then(data => {
+
+                    document.getElementById('acc_name').value = data.acc_name;
+                    document.getElementById('password').value = '';
+                    document.getElementById('account_id').value = accountId;
+
+                    document.getElementById('account-add-button').onclick = editAccount;
+                })
+                .catch(error => console.error('Error loading footer info:', error));
+        }
+
+        // 設定帳號表單 onclick 為 AddAccount 並清空資訊
+        function ResetAdminForm() {
+            document.getElementById('acc_name').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('account_id').value = '';
+
+            document.getElementById('account-add-button').onclick = AddAccount;
+        }
+
+        // 設定 product API 的 URL
+        const apiUrl_product = '/product/api/';
+
+        // 載入商品
+        function loadProducts() {
+            fetch(apiUrl_product)
+                .then(response => response.json())
+                .then(data => {
+                    const productList = document.getElementById('product-list');
+                    productList.innerHTML = '';  // 清空現有的商品列表
+                    data.forEach(product => {
+                        const productItem = document.createElement('div');
+                        productItem.classList.add('admin_product-item');
+                        productItem.innerHTML = `
+                    <div><strong>商品名稱：</strong><span>${product.product_name}</span></div>
+                    <div><strong>介紹：</strong><span>${product.introduction}</span></div>
+                    <div><strong>數量：</strong><span>${product.product_quantity}</span></div>
+                    <div><strong>價格：</strong><span>NT$ ${product.product_price}</span></div>
+                    <div class="admin_button-group">
+                        <button onclick="switchProductSubmit(${product.id})" class="admin_edit-button">編輯</button>
+                        <button onclick="deleteProduct(${product.id})" class="admin_delete-button">刪除</button>
+                    </div>
+                `;
+                        productList.appendChild(productItem);
+                    });
+                })
+                .catch(error => console.error('Error loading products:', error));
+
+            // 頁面載入時默認設置表單為新增商品
+            document.getElementById('product-add-button').onclick = AddProduct;
+            document.getElementById('product-reset-button').onclick = ResetProductForm;
+        }
+
+        // 新增商品
+        function AddProduct() {
+            const productName = document.getElementById('product_name').value;
+            const introduction = document.getElementById('introduction').value;
+            const quantity = document.getElementById('product_quantity').value;
+            const price = document.getElementById('product_price').value;
+
+            fetch(apiUrl_product, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django 的 CSRF Token
+                },
+                body: JSON.stringify({
+                    product_name: productName,
+                    introduction: introduction,
+                    product_quantity: quantity,
+                    product_price: price
+                })
+            })
+                .then(response => response.json().then(data => ({ status: response.status, body: data })))  // 解析響應
+                .then(({ status, body }) => {
+                    if (status === 201) {  // 成功創建的狀態碼
+                        // 新增成功後重新加載
+                        loadProducts();
+                        // 清空表單
+                        ResetProductForm();
+                    } else if (status === 400 && body.error) {
+                        // 顯示帳號已存在的提示
+                        alert(body.error);  // 提示用戶帳號已存在
+                    } else {
+                        alert('新增帳號失敗，請稍後再試。');  // 顯示通用錯誤消息
+                    }
+                })
+                .catch(error => console.error('Error adding account:', error));
+        }
+
+        // 編輯商品
+        function editProduct() {
+            const productName = document.getElementById('product_name').value;
+            const introduction = document.getElementById('introduction').value;
+            const quantity = document.getElementById('product_quantity').value;
+            const price = document.getElementById('product_price').value;
+            const product_id = document.getElementById('product_id').value;
+
+            fetch(`${apiUrl_product}${product_id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    product_name: productName,
+                    introduction: introduction,
+                    product_quantity: quantity,
+                    product_price: price
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        // 更新成功後重新加載帳號列表
+                        loadProducts();
+                        // 清空表單並重置表單提交動作為新增帳號
+                        ResetProductForm();
+                    } else {
+                        console.error('Failed to edit account:', data);
+                    }
+                })
+                .catch(error => console.error('Error editing account:', error));
+        }
+
+        // 刪除商品
+        function deleteProduct(product_id) {
+            if (confirm('確定要刪除這個商品嗎？')) {
+                fetch(`${apiUrl_product}${product_id}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                    .then(response => {
+                        if (response.status === 204) {
+                            loadProducts();
+                        } else {
+                            console.error('Failed to delete account');
+                        }
+                    })
+                    .catch(error => console.error('Error deleting product:', error));
+            }
+        }
+
+        // 設定商品表單 onclick 為 editProduct 並填充資訊
+        function switchProductSubmit(product_id) {
+            fetch(`${apiUrl_product}${product_id}/`)
+                .then(response => response.json())
+                .then(data => {
+
+                    document.getElementById('product_name').value = data.product_name;
+                    document.getElementById('introduction').value = data.introduction;
+                    document.getElementById('product_quantity').value = data.product_quantity;
+                    document.getElementById('product_price').value = data.product_price;
+                    document.getElementById('product_id').value = product_id;
+
+                    document.getElementById('product-add-button').onclick = editProduct;
+                })
+                .catch(error => console.error('Error loading footer info:', error));
+        }
+
+        // 設定商品表單 onclick 為 AddProduct 並清空資訊
+        function ResetProductForm() {
+            document.getElementById('product_name').value = '';
+            document.getElementById('introduction').value = '';
+            document.getElementById('product_quantity').value = '';
+            document.getElementById('product_price').value = '';
+            document.getElementById('product_id').value = '';
+
+            document.getElementById('product-add-button').onclick = AddProduct;
+        }
+
+        // 設定 footer API 的 URL
+        const apiUrl_footer = '/footer/api/';
+
+        // 加載頁尾
+        function loadFooter() {
+            fetch(apiUrl_footer)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('about_us').value = data[0].about_us;
+                    document.getElementById('contact_us').value = data[0].contact_us;
+                    document.getElementById('footer_id').value = data[0].id;
+                })
+                .catch(error => console.error('Error loading footer info:', error));
+            document.getElementById('footer-edit-button').onclick = editFooter;
+            document.getElementById('footer-reset-button').onclick = loadFooter;
+        }
+
+        // 編輯頁尾
+        function editFooter() {
+            const about_us = document.getElementById('about_us').value;
+            const contact_us = document.getElementById('contact_us').value;
+            const footer_id = document.getElementById('footer_id').value;
+
+            fetch(`${apiUrl_footer}${footer_id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // Django 的 CSRF Token
+                },
+                body: JSON.stringify({ about_us, contact_us })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        loadFooter();  // 更新成功後重新加載頁尾資訊
+                        loadFooter_below();
+                    } else {
+                        alert('更新 Footer 資訊失敗，請稍後再試。');
+                    }
+                })
+                .catch(error => console.error('Error updating footer info:', error));
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>所有商品</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <!-- 引入標頭 -->
+    {% include "header.html" %}
+
+    <!-- 主要內容區域 -->
+    <main>
+        <div id="product-list" class="all_products_product-list">
+            <!-- 商品項目會通過 JavaScript 從後端 API 動態載入 -->
+        </div>
+    </main>
+    <!-- 引入頁尾 -->
+    {% include "footer.html" %}
+
+    <!-- 購物車相關腳本 -->
+    <script>
+        // 頁面加載時加載各元素
+        document.addEventListener('DOMContentLoaded', loadProducts);
+
+        // 設定 product API 的 URL
+        const apiUrl_product = '/product/api/';
+
+        // 動態加載產品列表
+        function loadProducts() {
+            fetch(apiUrl_product)
+                .then(response => response.json())
+                .then(data => {
+                    const productList = document.getElementById('product-list');
+                    productList.innerHTML = '';  // 清空當前產品列表
+
+                    data.forEach(product => {
+                        // 只顯示庫存大於 0 的商品
+                        if (product.product_quantity > 0) {
+                            const productItem = `
+                        <div class="all_products_product-item">
+                            <h2>${product.product_name}</h2>
+                            <p><strong>介紹:</strong> ${product.introduction}</p>
+                            <p><strong>數量:</strong> ${product.product_quantity}</p>
+                            <p><strong>價格:</strong> $${product.product_price}</p>
+
+                            <!-- 用戶選擇購買的數量 -->
+                            <label for="quantity_${product.id}">選擇數量:</label>
+                            <input type="number" id="quantity_${product.id}" min="1" max="${product.product_quantity}" value="1">
+
+                            <!-- 加入購物車按鈕，點擊時調用 addToCart 函數 -->
+                            <button class="all_products_button" onclick="addToCart('${product.id}', '${product.product_name}', '${product.introduction}', '${product.product_quantity}', '${product.product_price}', document.getElementById('quantity_${product.id}').value)">
+                                加入購物車
+                            </button>
+                        </div>
+                    `;
+                            productList.innerHTML += productItem;  // 將商品插入列表
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading products:', error));
+        }
+
+
+
+        /**
+         * 將商品加入購物車
+         * @param {string} name - 商品名稱
+         * @param {string} introduction - 商品介紹
+         * @param {number} availableQuantity - 商品庫存數量
+         * @param {number} price - 商品價格
+         * @param {number} selectedQuantity - 使用者選擇的商品數量
+         */
+        function addToCart(id, name, introduction, availableQuantity, price, selectedQuantity) {
+            selectedQuantity = parseInt(selectedQuantity);
+
+            // 取得當前購物車中的商品列表
+            const existingProducts = getCookie("selectedProducts") || [];
+            const existingProductIndex = existingProducts.findIndex(product => product.name === name);
+
+            // 計算商品在購物車中的總數量（當前選擇數量 + 已存在的數量）
+            let totalQuantityInCart = selectedQuantity;
+            if (existingProductIndex !== -1) {
+                totalQuantityInCart += parseInt(existingProducts[existingProductIndex].quantity);
+            }
+
+            // 檢查選擇的數量是否超過庫存
+            if (totalQuantityInCart > availableQuantity) {
+                alert(`您選擇的數量 (${selectedQuantity}) 加上已在購物車中的數量 (${existingProducts[existingProductIndex] ? existingProducts[existingProductIndex].quantity : 0}) 超過庫存數量 (${availableQuantity})！`);
+                return;
+            }
+
+            // 如果商品已存在於購物車中，則更新數量；否則新增商品至購物車
+            if (existingProductIndex !== -1) {
+                existingProducts[existingProductIndex].quantity = totalQuantityInCart;
+            } else {
+                const productInfo = {
+                    id: id,
+                    name: name,
+                    introduction: introduction,
+                    quantity: selectedQuantity,
+                    price: price,
+                    availableQuantity: availableQuantity
+                };
+                existingProducts.push(productInfo);
+            }
+
+            // 將購物車商品資訊儲存至 cookie
+            document.cookie = `selectedProducts=${JSON.stringify(existingProducts)}; path=/;`;
+            alert(`商品 "${name}" 已經被選中，總數量為 ${totalQuantityInCart} ，已儲存到購物車中！`);
+        }
+
+        /**
+         * 從 cookie 中取得指定名稱的值
+         * @param {string} name - cookie 名稱
+         * @returns {Array} - 若成功解析，返回 JSON 陣列；若失敗則返回空陣列
+         */
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                const cookieValue = parts.pop().split(';').shift();
+                try {
+                    return JSON.parse(cookieValue);
+                } catch (e) {
+                    return [];
+                }
+            }
+            return [];
+        }
+    </script>
+
+</body>
+
+</html>
