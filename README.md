@@ -22,4 +22,9 @@
         2. 發送請求: 當用戶按下結帳按鈕時，構建包含所選商品的 JSON 請求，並將其發送到後端 API。
         3. 處理響應: 根據後端返回的狀態顯示適當的消息。的 JSON 請求，並將其發送到後端 API。
         3. 處理響應: 根據後端返回的狀態顯示適當的消息。
-
+# 指令
+```bash
+python manage.py migrate
+python manage.py runserver       
+```
+   
