@@ -30,11 +30,12 @@ RUN conda init bash
 # 確保 Conda 設定已生效
 SHELL ["/bin/bash", "-c"]
 
-# 創建 Conda 環境 webapp 並安裝 Python
-RUN conda create -y --name webapp python=3.9 && conda clean -afy
+# 複製 Django 專案到容器中
+COPY --chown=appuser:appuser ./Django_ShoppingCart_v3_React /home/appuser/Django_ShoppingCart_v3_React
+WORKDIR /home/appuser/Django_ShoppingCart_v3_React
 
-# **關鍵修正：使用 `conda run` 來執行 pip 安裝**
-RUN conda run -n webapp pip install django djangorestframework
+# 創建 Conda 環境 webapp 並安裝 Python
+RUN conda env create -f environment.yml && conda clean -afy
 
 # 預設啟動時進入 webapp 環境
 RUN echo "conda activate webapp" >> /home/appuser/.bashrc
