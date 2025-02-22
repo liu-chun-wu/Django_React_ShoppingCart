@@ -31,11 +31,15 @@ RUN conda init bash
 SHELL ["/bin/bash", "-c"]
 
 # 複製 Django 專案到容器中
-COPY --chown=appuser:appuser ./Django_ShoppingCart_v3_React /home/appuser/Django_ShoppingCart_v3_React
+COPY --chown=appuser:appuser . /home/appuser/Django_ShoppingCart_v3_React
+
+# 確保 `environment.yml` 也被複製
+COPY --chown=appuser:appuser ./environment.yml /home/appuser/Django_ShoppingCart_v3_React/environment.yml
+
 WORKDIR /home/appuser/Django_ShoppingCart_v3_React
 
 # 創建 Conda 環境 webapp 並安裝 Python
-RUN conda env create -f environment.yml && conda clean -afy
+RUN conda env create --name webapp -f environment.yml && conda clean -afy
 
 # 預設啟動時進入 webapp 環境
 RUN echo "conda activate webapp" >> /home/appuser/.bashrc

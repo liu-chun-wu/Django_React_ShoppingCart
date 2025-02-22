@@ -28,5 +28,16 @@ python manage.py migrate
 python manage.py runserver       
 python manage.py runserver 0.0.0.0:8000
 conda env export > environment.yml     
+
+docker build -t test:v1 .
+
+docker run -it -p 8000:8000 --name vm1 test:v1
+
+docker ps -a
+docker images -a
+
+docker rm $(docker ps -aq)
+docker rmi $(docker images -q)
+
 ```
    
