@@ -1,0 +1,22 @@
+{
+  "name": "django_shoppingcart_v3_react",
+  "version": "1.0.0",
+  "description": "簡易購物網站 - Django\r ===\r # 功能說明\r - 網站上方有導覽列，分別為首頁,所有商品,購物車,管理員登入，按下按鈕會到相對應的頁面:\r     - 所有商品 : 列出所有商品及其資訊(介紹、名稱、價格、數量)\r     - 購物車 : 列出顧客已經選購的商品，可以結帳(會減少商品庫存)和清空購物車\r     - 後台登入 : 管理員可以登入後台修改商品、帳號、footer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liu-chun-wu/Django_ShoppingCart_v3_React.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/liu-chun-wu/Django_ShoppingCart_v3_React/issues"
+  },
+  "homepage": "https://github.com/liu-chun-wu/Django_ShoppingCart_v3_React#readme",
+  "dependencies": {
+    "react": "^19.0.0"
+  }
+}

@@ -1,0 +1,72 @@
+.product_list {
+    display: flex;
+    /* 使用 flex 布局來排列商品項目 */
+    flex-wrap: wrap;
+    /* 當行內空間不足時，商品項目換行 */
+    justify-content: center;
+    /* 商品項目居中對齊 */
+    margin-top: 70px;
+    /* 與頁面頂部的距離 */
+    padding-bottom: 50px;
+    /* 增加底部空間 */
+}
+
+.product_item {
+    flex: 0 0 20%;
+    /* 每個商品項目默認佔據 20% 的寬度 */
+    margin: 10px;
+    /* 每個項目之間的間距 */
+    padding: 10px;
+    /* 項目內部的填充距離 */
+    border: 1px solid #ccc;
+    /* 灰色邊框，增強區分感 */
+    border-radius: 5px;
+    /* 邊框圓角，增強美觀 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* 增加陰影，增強立體感 */
+    text-align: left;
+    /* 左對齊文字 */
+    background-color: #f9f9f9;
+    /* 背景顏色，區分商品項目 */
+}
+
+/* 在不同螢幕寬度下的佈局調整，適應響應式設計 */
+@media (max-width: 768px) {
+    .product-item {
+        flex: 0 0 45%;
+        /* 螢幕寬度小於 768px 時，項目寬度改為 45% */
+    }
+}
+
+@media (max-width: 480px) {
+    .product-item {
+        flex: 0 0 100%;
+        /* 螢幕寬度小於 480px 時，項目寬度改為 100% */
+    }
+}
+
+.button {
+    width: 100%;
+    /* 按鈕寬度佔滿容器 */
+    padding: 10px 30px;
+    /* 增加按鈕內邊距 */
+    background-color: #4CAF50;
+    /* 按鈕背景顏色 */
+    color: white;
+    /* 按鈕文字顏色 */
+    border: none;
+    /* 去掉按鈕邊框 */
+    border-radius: 4px;
+    /* 圓角按鈕 */
+    cursor: pointer;
+    /* 鼠標懸停時顯示手型 */
+    font-weight: bold;
+    /* 粗體字體，加強按鈕的強調 */
+    transition: background-color 0.3s;
+    /* 背景色過渡效果 */
+}
+
+.button:hover {
+    background-color: #45a049;
+    /* 懸停時的背景顏色變深 */
+}

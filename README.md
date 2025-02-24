@@ -26,7 +26,7 @@
 ```bash
 python manage.py migrate
 python manage.py runserver       
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 127.0.0.1:8000
 conda env export > environment.yml     
 
 docker build -t test:v1 .
@@ -38,6 +38,5 @@ docker images -a
 
 docker rm $(docker ps -aq)
 docker rmi $(docker images -q)
-
 ```
    

@@ -1,60 +1,38 @@
 import json
 from django.http import JsonResponse
-from django.shortcuts import redirect, render, get_object_or_404
 from .models import *
+from .serializers import *
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import *
 
-# 顯示首頁
-def front_page(request):
-    return render(request, 'front_page.html')
-
-# 顯示所有商品的頁面
-def all_products(request):
-    return render(request, 'all_products.html')
-
-# 顯示購物車頁面
-def shopcart(request):
-    return render(request, 'shopcart.html')
-
-# 顯示管理員頁面
-def admin_page(request):
-    # 檢查是否已經登入
+ 
+def check_admin_login(request):
     if request.session.get('is_admin_logged_in'):
-        return render(request, "admin.html")  # 已登入，顯示管理員頁面
+        return JsonResponse({"logged_in": True})
     else:
-        return redirect("/admin/login/")  # 未登入，重定向至登入頁面
-
-# 管理員登入功能
+        return JsonResponse({"logged_in": False}, status=401)
+    
 def admin_login(request):
     if request.method == "POST":
-        acc_name = request.POST.get("acc_name")
-        password = request.POST.get("password")
-
         try:
+            data = json.loads(request.body)
+            acc_name = data.get("acc_name")
+            password = data.get("password")
+
             # 驗證帳號和密碼
             admin = Admin.objects.get(acc_name=acc_name, password=password)
             request.session['is_admin_logged_in'] = True  # 使用 session 紀錄登入狀態
-            return redirect("/admin/")  # 登入成功，重定向至 /admin
+            return JsonResponse({"message": "Login successful"}, status=200)  # 登入成功
         except Admin.DoesNotExist:
-            footer_info = Footer.objects.first()
-            context = {
-                'footer_info': footer_info,
-                "error_message": "Incorrect account name or password."
-            }
-            return render(request, "admin_login.html", context)  # 顯示錯誤訊息
+            return JsonResponse({"error": "Incorrect account name or password."}, status=401)  # 錯誤的帳號或密碼
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON."}, status=400)  # 無效的 JSON 請求
     else:
-        footer_info = Footer.objects.first()
-        context = {
-            'footer_info': footer_info,
-        }
-        return render(request, "admin_login.html", context)  # 顯示登入頁面
+        return JsonResponse({"error": "Only POST requests are allowed."}, status=405)  # 只允許 POST 請求
 
-# 管理員登出功能
 def admin_logout(request):
     request.session.flush()  # 清除 session 資訊
-    return redirect('/admin/')  # 登出後重定向至登入頁面
+    return JsonResponse({"message": "登出成功。"}, status=200)  # 返回成功消息
 
 class AdminViewSet(viewsets.ModelViewSet): 
     queryset = Admin.objects.all()  # 指定查詢集
@@ -68,14 +46,6 @@ class AdminViewSet(viewsets.ModelViewSet):
             return Response({"error": "帳號名稱已存在"}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)  # 調用父類的創建方法
-    
-class CustomerViewSet(viewsets.ModelViewSet): 
-    queryset = Customer.objects.all()  # 指定查詢集
-    serializer_class = CustomerSerializer  # 指定序列化器
-
-class SellerViewSet(viewsets.ModelViewSet): 
-    queryset = Seller.objects.all()  # 指定查詢集
-    serializer_class = SellerSerializer  # 指定序列化器
 
 class ProductViewSet(viewsets.ModelViewSet): 
     queryset = Product.objects.all()  # 指定查詢集
@@ -89,10 +59,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response({"error": "商品名稱已存在"}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)  # 調用父類的創建方法
-
-class TradingRecordViewSet(viewsets.ModelViewSet): 
-    queryset = TradingRecord.objects.all()  # 指定查詢集
-    serializer_class = TradingRecordSerializer  # 指定序列化器
 
 class FooterViewSet(viewsets.ModelViewSet): 
     queryset = Footer.objects.all()  # 指定查詢集

@@ -1,0 +1,86 @@
+.container {
+    width: 60%;
+    /* 設置購物車容器寬度為 60% */
+    margin: auto;
+    /* 居中對齊容器 */
+}
+
+.row {
+    display: flex;
+    /* 使用 flex 佈局來排列商品行 */
+    align-items: center;
+    /* 垂直方向居中對齊 */
+    justify-content: space-between;
+    /* 水平方向在兩側分散 */
+    padding: 10px;
+    /* 添加上下左右的間距 */
+    border-bottom: 1px solid #ccc;
+    /* 添加底部分隔線 */
+}
+
+.info {
+    display: flex;
+    /* 使用 flex 佈局以便多個元素水平排列 */
+    flex: 1;
+    /* 允許元素自適應父容器的寬度 */
+    padding: 2px;
+    /* 內部微小間距，增強可讀性 */
+    text-align: center;
+    /* 文字居中對齊 */
+    font-size: 20px;
+    /* 設定較大字體 */
+    white-space: nowrap;
+    /* 防止內容換行，保持在單行內 */
+}
+
+.total {
+    font-weight: bold;
+    /* 粗體字，強調總計文字 */
+    text-align: center;
+    /* 總計文字居中對齊 */
+    padding: 20px;
+    /* 增加上下的間距 */
+    font-size: 50px;
+    /* 增加字體大小，突顯總計 */
+}
+
+.cart_button_container {
+    display: flex;
+    /* 使用 flex 佈局 */
+    justify-content: center;
+    /* 按鈕容器居中對齊 */
+    gap: 10px;
+    /* 按鈕之間的間距 */
+    padding: 10px 0;
+    /* 上下間距 */
+}
+
+.cart_button {
+    width: auto;
+    /* 按鈕寬度自適應內容 */
+    max-width: 100%;
+    /* 防止按鈕超出容器寬度 */
+    padding: 10px 20px;
+    /* 按鈕內邊距 */
+    background-color: #4CAF50;
+    /* 按鈕背景色 */
+    color: white;
+    /* 按鈕文字顏色 */
+    border: none;
+    /* 移除按鈕邊框 */
+    border-radius: 4px;
+    /* 圓角邊框，增強美觀 */
+    cursor: pointer;
+    /* 鼠標懸停時顯示手型 */
+    font-weight: bold;
+    /* 粗體字體，增強按鈕可點擊性 */
+    transition: background-color 0.3s;
+    /* 背景色過渡效果 */
+    white-space: nowrap;
+    /* 避免文字換行 */
+}
+
+.cart-button:hover {
+    background-color: #45a049;
+    /* 懸停時背景顏色變深 */
+}

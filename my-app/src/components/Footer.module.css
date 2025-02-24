@@ -1,0 +1,40 @@
+.footer {
+    position: fixed;
+    /* 固定 footer 位置 */
+    bottom: 0;
+    /* 靠底部對齊 */
+    left: 0;
+    /* 靠左側對齊 */
+    width: 100%;
+    /* 寬度全屏 */
+    height: 5vh;
+    /* 高度為視窗高度的 5% */
+    z-index: 1000;
+    /* 層級高於其他元素，以確保 footer 不被覆蓋 */
+    background-color: #3498db;
+    /* 背景色為藍色 */
+    padding: 10px 0;
+    /* 上下內邊距 */
+}
+
+.div {
+    display: flex;
+    /* 使用 flex 布局 */
+    justify-content: center;
+    /* 項目居中對齊 */
+    align-items: center;
+    /* 垂直居中對齊 */
+    font-size: 14px;
+    /* 設定字體大小 */
+}
+
+.p {
+    color: white;
+    /* 文字顏色為白色 */
+    margin-right: 14px;
+    /* 每段文字之間的間距 */
+    cursor: pointer;
+    /* 滑鼠移動至文字時顯示指標 */
+    transition: color 0.3s;
+    /* 文字顏色的過渡效果 */
+}

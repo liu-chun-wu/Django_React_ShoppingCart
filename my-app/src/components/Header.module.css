@@ -1,0 +1,51 @@
+.header {
+    position: fixed;
+    /* 固定 header 位置 */
+    top: 0;
+    /* 靠頂部對齊 */
+    left: 0;
+    /* 靠左側對齊 */
+    width: 100%;
+    /* 寬度全屏 */
+    height: 5vh;
+    /* 高度為視窗高度的 5% */
+    z-index: 1000;
+    /* 層級高於其他元素，以確保 header 不被覆蓋 */
+    background-color: #3498db;
+    /* 背景色為藍色 */
+    padding: 20px 0;
+    /* 上下內邊距 */
+}
+
+.a {
+    color: white;
+    /* 文字顏色為白色 */
+    text-decoration: none;
+    /* 移除下劃線 */
+    padding: 0px;
+    /* 移除內邊距 */
+    border-radius: 5px;
+    /* 圓角邊框 */
+    transition: background-color 0.3s;
+    /* 背景顏色過渡效果 */
+    margin-right: 20px;
+    /* 每個連結之間的間距 */
+}
+
+.a:hover {
+    background-color: #2980b9;
+    /* 滑鼠懸停時，背景顏色加深 */
+}
+
+.ul {
+    display: flex;
+    /* 使用 flex 布局 */
+    list-style-type: none;
+    /* 移除項目符號 */
+    padding: 0;
+    /* 移除內邊距 */
+    justify-content: center;
+    /* 項目居中對齊 */
+    align-items: center;
+    /* 垂直居中對齊 */
+}
