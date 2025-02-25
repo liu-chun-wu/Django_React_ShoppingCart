@@ -7,7 +7,7 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE", "Django_ShoppingCart_v3_React.settings"
+        "DJANGO_SETTINGS_MODULE", "Django_backend.settings"
     )
     try:
         from django.core.management import execute_from_command_line

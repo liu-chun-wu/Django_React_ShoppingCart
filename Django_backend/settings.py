@@ -61,7 +61,7 @@ CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8080"]  # 允许的前端地址
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8080"]  # 你的 React 开发服务器地址
 
 
-ROOT_URLCONF = "Django_ShoppingCart_v3_React.urls"
+ROOT_URLCONF = "Django_backend.urls"
 
 TEMPLATES = [
     {
@@ -79,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "Django_ShoppingCart_v3_React.wsgi.application"
+WSGI_APPLICATION = "Django_backend.wsgi.application"
 
 
 # Database
