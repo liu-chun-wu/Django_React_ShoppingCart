@@ -261,7 +261,7 @@ const Admin = () => {
     return (
         <main>
             <h2>放這行是因為下面的h2會被header擋住</h2>
-
+            <h2>--------------------------------</h2>
             <h2>目前已存在的商品</h2>
             <section className={styles.product_container}>
                 <div className={styles.product_list} id="product-list">
