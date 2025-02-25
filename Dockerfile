@@ -7,8 +7,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     curl bzip2 git \
     mysql-client-core-8.0 \
-    libmysqlclient-dev \
-    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # 設定 root 密碼為 root

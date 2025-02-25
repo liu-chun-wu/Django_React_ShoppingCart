@@ -63,7 +63,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 
-
 ROOT_URLCONF = "django_backend.urls"
 
 TEMPLATES = [
@@ -84,6 +83,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "django_backend.wsgi.application"
 
+import os
+from dotenv import load_dotenv
+# 讀取 .env 檔案
+load_dotenv()
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -96,19 +99,18 @@ WSGI_APPLICATION = "django_backend.wsgi.application"
 # }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydjango',  # 你的 MySQL 資料庫名稱
-        'USER': 'django_user',  # MySQL 用戶名
-        'PASSWORD': 'root',  # MySQL 密碼
-        'HOST': '172.30.192.1',  # 本機 MySQL
-        'PORT': '3306',  # MySQL 預設端口
+        'ENGINE': 'mysql.connector.django',
+        'NAME': os.getenv('DB_NAME', 'mydjango'),  # 從 .env 檔案讀取 DB 名稱
+        'USER': os.getenv('DB_USER', 'django_user'),  # 從 .env 檔案讀取用戶名
+        'PASSWORD': os.getenv('DB_PASSWORD', 'root'),  # 從 .env 檔案讀取密碼
+        'HOST': os.getenv('DB_HOST', 'localhost'),  # 從 .env 檔案讀取主機
+        'PORT': os.getenv('DB_PORT', '3306'),  # 從 .env 檔案讀取端口
         'OPTIONS': {
             'charset': 'utf8mb4',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
