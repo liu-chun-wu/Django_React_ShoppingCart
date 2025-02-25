@@ -47,7 +47,7 @@ SELECT user, host FROM mysql.user;
 python manage.py makemigrations <app_name> --empty --name <migration_name>
 python manage.py migrate
 python manage.py runserver       
-python manage.py runserver 127.0.0.1:8000
+python manage.py runserver 0.0.0.0:8000
 conda env export > environment.yml     
 
 docker build -t test:v1 .
