@@ -22,21 +22,3 @@
         2. 發送請求: 當用戶按下結帳按鈕時，構建包含所選商品的 JSON 請求，並將其發送到後端 API。
         3. 處理響應: 根據後端返回的狀態顯示適當的消息。的 JSON 請求，並將其發送到後端 API。
         3. 處理響應: 根據後端返回的狀態顯示適當的消息。
-# 指令
-```bash
-python manage.py migrate
-python manage.py runserver       
-python manage.py runserver 127.0.0.1:8000
-conda env export > environment.yml     
-
-docker build -t test:v1 .
-
-docker run -it -p 8000:8000 --name vm1 test:v1
-
-docker ps -a
-docker images -a
-
-docker rm $(docker ps -aq)
-docker rmi $(docker images -q)
-```
-   

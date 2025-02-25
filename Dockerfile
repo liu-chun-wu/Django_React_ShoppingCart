@@ -4,7 +4,12 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 安裝必要工具
-RUN apt-get update && apt-get install -y curl bzip2 git && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    curl bzip2 git \
+    mysql-client-core-8.0 \
+    libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 # 設定 root 密碼為 root
 RUN echo "root:root" | chpasswd
@@ -44,5 +49,5 @@ RUN conda env create --name webapp -f environment.yml && conda clean -afy
 # 預設啟動時進入 webapp 環境
 RUN echo "conda activate webapp" >> /home/appuser/.bashrc
 
-# 設定容器啟動時自動載入 webapp 環境
-CMD ["bash", "-i"]
+# 設定容器啟動時自動載入 webapp 環境，執行 migrate 並啟動 Django 伺服器
+CMD ["/bin/bash", "-c", "source /home/appuser/miniconda/bin/activate webapp && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

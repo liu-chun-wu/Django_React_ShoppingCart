@@ -1,0 +1,61 @@
+例如 : A想要連接B的mysql server
+
+1.A要安裝套件
+sudo apt update
+
+# linux 連接 mysql 的套件
+sudo apt install mysql-client-core-8.0
+
+# 想讓 Python 使用 MySQL 的套件
+sudo apt install libmysqlclient-dev -y
+sudo apt install pkg-config -y
+pip install mysqlclient
+
+2.B 要新增 MySQL 使用者權限
+# 172.30.197.65是A的ip地址
+SELECT User, Host FROM mysql.user;
+CREATE USER 'django_user'@'172.30.197.65' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON mydjango.* TO 'django_user'@'172.30.197.65';
+FLUSH PRIVILEGES;
+
+3.A 測試連接sql，進入shell就算成功
+#  172.30.192.1是mysql server的地址
+mysql -h 172.30.192.1 -P 3306 -u django_user -p
+
+
+4. B的設定
+# 啟動和停止 mysql server(管理員權限的CMD)
+net start mysql
+net stop mysql
+
+#  顯示本機是否有程式在運行並監聽 3306 端口，這邊通常是檢查 MySQL 是否在指定端口（3306）上監聽（listen）
+netstat -ano | findstr :3306
+看到 TCP    0.0.0.0:3306    0.0.0.0:0    LISTENING    <PID> 代表OK
+如果看到 TCP    127.0.0.1:3306    0.0.0.0:0    LISTENING    <PID> 代表MySQL 只允許本機連線，需要修改設定
+# 如果沒有，修改 my.ini 的 bind-address 為 0.0.0.0
+
+# 檢查 Windows 防火牆設定是否阻擋 3306 端口
+netsh advfirewall firewall show rule name="MySQL"
+# 如果有阻擋，在 Windows 防火牆中開放 3306 端口，讓 MySQL 允許遠端連線
+netsh advfirewall firewall add rule name="MySQL" protocol=TCP dir=in localport=3306 action=allow
+
+# 查看用戶權限
+SELECT user, host FROM mysql.user;
+
+
+指令:
+python manage.py makemigrations <app_name> --empty --name <migration_name>
+python manage.py migrate
+python manage.py runserver       
+python manage.py runserver 127.0.0.1:8000
+conda env export > environment.yml     
+
+docker build -t test:v1 .
+
+docker run -it -p 8000:8000 --name vm1 test:v1
+
+docker ps -a
+docker images -a
+
+docker rm $(docker ps -aq)
+docker rmi $(docker images -q)

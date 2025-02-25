@@ -82,10 +82,24 @@ WSGI_APPLICATION = "Django_ShoppingCart_v3_React.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mydjango',  # 你的 MySQL 資料庫名稱
+        'USER': 'django_user',  # MySQL 用戶名
+        'PASSWORD': 'root',  # MySQL 密碼
+        'HOST': '172.30.192.1',  # 本機 MySQL
+        'PORT': '3306',  # MySQL 預設端口
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
     }
 }
 
