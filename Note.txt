@@ -59,3 +59,7 @@ docker images -a
 
 docker rm $(docker ps -aq)
 docker rmi $(docker images -q)
+
+docker start vm1
+docker stop vm1
+docker exec -it vm1 bash
