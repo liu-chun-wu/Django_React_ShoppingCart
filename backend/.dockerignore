@@ -6,11 +6,11 @@ __pycache__
 *.pyd
 
 # 環境變數和敏感信息
-# .env
-# .env.local
-# .env.production
-# .env.development
-# .env.test
+.env
+.env.local
+.env.production
+.env.development
+.env.test
 
 # 靜態文件與媒體文件（如果由外部服務處理）
 # staticfiles

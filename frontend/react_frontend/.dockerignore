@@ -5,11 +5,11 @@ yarn.lock
 pnpm-lock.yaml
 
 # 忽略本機環境變數
-# .env
-# .env.local
-# .env.development
-# .env.production
-# .env.test
+.env
+.env.local
+.env.development
+.env.production
+.env.test
 
 # 忽略 build 目錄（除非你只想部署靜態文件）
 build

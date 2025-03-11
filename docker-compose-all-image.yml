@@ -1,0 +1,33 @@
+version: "3.3"
+
+services:
+  backend:
+    image: jeffery426/django_react_shoppingcart_backend:latest # ✅ 從 Docker Hub 拉取
+    container_name: django-backend
+    restart: always
+    ports:
+      - "${BACKEND_PORT}:8000"
+    environment:
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on: []
+    env_file:
+      - ./backend/.env # ✅ 讓容器讀取本機 `.env`
+
+  frontend:
+    image: jeffery426/django_react_shoppingcart_frontend:latest # ✅ 從 Docker Hub 拉取
+    container_name: react-frontend
+    restart: always
+    ports:
+      - "${FRONTEND_PORT}:8080"
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/react_frontend/.env
+
+volumes:
+  static_volume:

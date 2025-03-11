@@ -22,7 +22,16 @@ services:
       - ./backend/.env
 
   frontend:
-    build: ./frontend/react_frontend
+    build:
+      context: ./frontend/react_frontend
+      args:
+        VITE_API_URL_BACKEND: "/api"
+        VITE_API_URL_PRODUCT: "/api/product/"
+        VITE_API_URL_ADMIN: "/api/admin/"
+        VITE_API_URL_FOOTER: "/api/footer/"
+        VITE_API_URL_ADMIN_CHECKLOGIN: "/api/check_login/"
+        VITE_API_URL_ADMIN_LOGIN: "/api/login/"
+        VITE_API_URL_ADMIN_LOGOUT: "/api/logout/"
     container_name: react-frontend
     restart: always
     ports:

@@ -102,3 +102,18 @@ docker-compose -f docker-compose-all.yml up --build -d
 docker-compose -f docker-compose-all.yml down
 docker-compose -f docker-compose-all.yml  restart backend
 docker-compose -f docker-compose-all.yml  restart frontend
+
+
+docker tag django_react_shoppingcart_backend:latest jeffery426/django_react_shoppingcart_backend:latest
+docker tag django_react_shoppingcart_frontend:latest jeffery426/django_react_shoppingcart_frontend:latest
+docker tag nginx:alpine jeffery426/nginx:alpine
+docker tag continuumio/miniconda3:latest jeffery426/miniconda3:latest
+docker tag node:20-alpine jeffery426/node:20-alpine
+
+docker push jeffery426/django_react_shoppingcart_backend:latest
+docker push jeffery426/django_react_shoppingcart_frontend:latest
+docker push jeffery426/nginx:alpine
+docker push jeffery426/miniconda3:latest
+docker push jeffery426/node:20-alpine
+
+docker-compose -f docker-compose-all-image.yml up --build -d
