@@ -1,43 +1,38 @@
-# 使用 Ubuntu 作為基礎映像
-FROM ubuntu:latest
+# 第一階段：使用輕量 Node.js 建構 React 應用
+FROM node:20-alpine AS builder
 
-# 設定環境變數，避免交互式安裝
-ENV DEBIAN_FRONTEND=noninteractive
-
-# 安裝必要工具
-RUN apt-get update && apt-get install -y \
-    curl bzip2 git \
-    mysql-client-core-8.0 \
-    ca-certificates \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# 安裝 Node.js 及 npm（安裝最新版 Node.js）
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g npm@latest
-
-# 建立非 root 使用者 appuser
-RUN useradd -m -s /bin/bash appuser
-
-# 切換到 appuser
-USER appuser
-WORKDIR /home/appuser/react_frontend
+# 設定工作目錄
+WORKDIR /app
 
 # 複製 package.json 和 package-lock.json，利用 Docker Cache 提高構建效率
-COPY --chown=appuser:appuser package.json package-lock.json ./
+COPY package.json package-lock.json ./
 
 # 安裝 npm 依賴
 RUN npm install --omit=dev --no-audit --no-fund
 
 # 複製其餘專案檔案（避免 node_modules 被複製）
-COPY --chown=appuser:appuser . .
+COPY . .
 
-# 建置 React 專案
+# 建置 React 應用
 RUN npm run build
 
-# 使用 `serve` 提供靜態前端文件
-RUN npm install -g serve
+# 第二階段：使用 Nginx 提供靜態前端檔案
+FROM nginx:alpine
 
-# 容器啟動時執行 React 伺服器
-CMD ["serve", "-s", "build", "-l", "8080"]
+# 設定工作目錄
+WORKDIR /usr/share/nginx/html
+
+# 清除預設的 Nginx 靜態文件
+RUN rm -rf ./*
+
+# 從第一階段複製 React build 檔案
+COPY --from=builder /app/build .
+
+# 複製自訂的 Nginx 設定（確保 React 路由工作）
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 開放 80 端口（HTTP）
+EXPOSE 80
+
+# 啟動 Nginx 伺服器
+CMD ["nginx", "-g", "daemon off;"]

@@ -48,6 +48,11 @@ python manage.py makemigrations <app_name> --empty --name <migration_name>
 python manage.py migrate
 python manage.py runserver       
 python manage.py runserver 0.0.0.0:8000
+
+
+
+gunicorn --reload --bind 0.0.0.0:8000 django_backend.wsgi:application  
+
 conda env export > environment.yml     
 
 docker build -t test:v1 .
@@ -64,3 +69,22 @@ docker rmi $(docker images -q)
 docker start vm1
 docker stop vm1
 docker exec -it vm1 bash
+
+npm run build
+sudo mkdir -p /var/www/react_frontend
+sudo cp -r dist/* /var/www/react_frontend/
+
+# 啟動 Nginx
+sudo systemctl start nginx
+
+# 停止 Nginx
+sudo systemctl stop nginx
+
+# 重新啟動 Nginx（會先停止再啟動）
+sudo systemctl restart nginx
+
+# 重新載入設定（不影響已運行的請求）
+sudo systemctl reload nginx
+
+# 檢查 Nginx 是否運行
+sudo systemctl status nginx
