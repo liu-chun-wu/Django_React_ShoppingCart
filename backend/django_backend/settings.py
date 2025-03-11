@@ -15,18 +15,30 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-_6o@(r=n7#u(1du3119k@hl(f2=wl6_$ssd0tu83u$(ln3yr#s"
 
+import environ
+import os
+
+# 初始化 django-environ
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))  # 明確指定 .env 的位置
+
+# 設定 DEBUG，預設為 False
+DEBUG = env.bool("DEBUG", default=False)
+
+# 從 .env 讀取 SECRET_KEY
+SECRET_KEY = env("SECRET_KEY")
+
+# 設定 ALLOWED_HOSTS
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1"])
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
+# ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -53,17 +65,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8080"]  # 你的 React 开发服务器地址
-
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8080"]  # 允许的前端地址
-
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS",
+                                default=["http://127.0.0.1:8080"])
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS",
+                                default=["http://127.0.0.1:8080"])
 CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOW_ALL_ORIGINS = False  # 允許所有前端訪問
-
-
-
-
-ROOT_URLCONF = "django_backend.urls"
 
 TEMPLATES = [
     {
@@ -81,12 +88,8 @@ TEMPLATES = [
     },
 ]
 
+ROOT_URLCONF = "django_backend.urls"
 WSGI_APPLICATION = "django_backend.wsgi.application"
-
-import os
-from dotenv import load_dotenv
-# 讀取 .env 檔案
-load_dotenv()
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -100,56 +103,59 @@ load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': os.getenv('DB_NAME', 'mydjango'),  # 從 .env 檔案讀取 DB 名稱
-        'USER': os.getenv('DB_USER', 'django_user'),  # 從 .env 檔案讀取用戶名
-        'PASSWORD': os.getenv('DB_PASSWORD', 'root'),  # 從 .env 檔案讀取密碼
-        'HOST': os.getenv('DB_HOST', 'localhost'),  # 從 .env 檔案讀取主機
-        'PORT': os.getenv('DB_PORT', '3306'),  # 從 .env 檔案讀取端口
+        'NAME': env("DB_NAME", default="mydjango"),
+        'USER': env("DB_USER", default="django_user"),
+        'PASSWORD': env("DB_PASSWORD", default="root"),
+        'HOST': env("DB_HOST", default="localhost"),
+        'PORT': env("DB_PORT", default="3306"),
         'OPTIONS': {
             'charset': 'utf8mb4',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
+TIME_ZONE = "Asia/Taipei"  # 根據你的正式環境時區
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+# 靜態檔案的 URL
 STATIC_URL = "/static/"
+
+# 開發環境下，Django 會從這些資料夾提供靜態檔案
 STATICFILES_DIRS = [BASE_DIR / "shop" / "static"]
+
+# 正式環境使用 collectstatic 將所有靜態檔案收集到這裡，交由 Nginx 提供
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

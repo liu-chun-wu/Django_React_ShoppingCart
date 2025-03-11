@@ -1,51 +1,38 @@
-FROM ubuntu:latest
+# 使用 Miniconda 官方映像，避免手動安裝
+FROM continuumio/miniconda3:latest
 
 # 設定環境變數，避免交互式安裝
 ENV DEBIAN_FRONTEND=noninteractive
-
-# 安裝必要工具
-RUN apt-get update && apt-get install -y \
-    curl bzip2 git \
-    mysql-client-core-8.0 \
-    && rm -rf /var/lib/apt/lists/*
-
-# 設定 root 密碼為 root
-RUN echo "root:root" | chpasswd
+ENV PYTHONUNBUFFERED=1
 
 # 建立非 root 使用者 appuser
-RUN useradd -m -s /bin/bash appuser && echo "appuser:appuser" | chpasswd
+RUN useradd -m -s /bin/bash appuser
 
 # 切換到 appuser
 USER appuser
 WORKDIR /home/appuser
 
-# 下載並安裝 Miniconda
-RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh \
-    && bash miniconda.sh -b -p /home/appuser/miniconda \
-    && rm miniconda.sh
-
-# 設定 Conda 環境變數
-ENV PATH="/home/appuser/miniconda/bin:$PATH"
-
-# 初始化 Conda 讓 base 環境自動啟用
-RUN conda init bash
-
-# 確保 Conda 設定已生效
-SHELL ["/bin/bash", "-c"]
-
-# 複製 Django 專案到容器中
-COPY --chown=appuser:appuser . /home/appuser/django_backend
-
-# 確保 `environment.yml` 也被複製
-COPY --chown=appuser:appuser ./environment.yml /home/appuser/django_backend/environment.yml
-
-WORKDIR /home/appuser/django_backend
+# 確保 `environment.yml` 先被複製，讓 Conda 安裝能利用 Docker Cache
+COPY --chown=appuser:appuser ./environment.yml /home/appuser/environment.yml
 
 # 創建 Conda 環境 webapp 並安裝 Python
 RUN conda env create --name webapp -f environment.yml && conda clean -afy
 
-# 預設啟動時進入 webapp 環境
-RUN echo "conda activate webapp" >> /home/appuser/.bashrc
+# 設定 Conda 環境變數（確保 `conda run` 可以運行）
+ENV PATH="/home/appuser/miniconda/bin:$PATH"
 
-# 設定容器啟動時自動載入 webapp 環境，執行 migrate 並啟動 Django 伺服器
-CMD ["/bin/bash", "-c", "source /home/appuser/miniconda/bin/activate webapp && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# 切換到專案目錄並複製 Django 專案
+WORKDIR /home/appuser/django_backend
+COPY --chown=appuser:appuser . /home/appuser/django_backend
+
+# 確保 migrations 正確
+RUN conda run -n webapp python manage.py migrate
+
+# 收集靜態文件（正式環境通常會有 Nginx 提供靜態文件）
+RUN conda run -n webapp python manage.py collectstatic --noinput
+
+# Expose 8000 端口
+EXPOSE 8000
+
+# 使用 Gunicorn 運行 Django 伺服器（適合正式環境）
+CMD ["conda", "run", "-n", "webapp", "gunicorn", "--bind", "0.0.0.0:8000", "django_backend.wsgi:application"]
