@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  react-frontend:
+    build: . # 確保正確指向 React 應用的目錄
+    container_name: react-nginx
+    restart: always
+    ports:
+      - "8080:8080" # 修正 EXPOSE 端口
+    depends_on: []
+    env_file:
+      - .env
