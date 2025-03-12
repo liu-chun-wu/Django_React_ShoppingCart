@@ -11,3 +11,5 @@
 - 前端框架 : React
 - 語言 : Python,JavaScript,html,CSS
 - 部屬工具 : Docker部屬前後端，連到本機的Mysql server
+
+# 指令

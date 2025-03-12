@@ -20,21 +20,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-import environ
 import os
 
-# 初始化 django-environ
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))  # 明確指定 .env 的位置
-
 # 設定 DEBUG，預設為 False
-DEBUG = env.bool("DEBUG", default=False)
+DEBUG = os.getenv("DEBUG", "False")
 
 # 從 .env 讀取 SECRET_KEY
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # 設定 ALLOWED_HOSTS
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1"])
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -66,10 +61,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS",
-                                default=["http://127.0.0.1:8080"])
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS",
-                                default=["http://127.0.0.1:8080"])
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS",
+                                 "http://localhost:8080").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS",
+                                 "http://localhost:8080").split(",")
 CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOW_ALL_ORIGINS = False  # 允許所有前端訪問
 
@@ -85,6 +80,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "debug":
+            DEBUG,
         },
     },
 ]
@@ -104,14 +101,15 @@ WSGI_APPLICATION = "django_backend.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': env("DB_NAME", default="mydjango"),
-        'USER': env("DB_USER", default="django_user"),
-        'PASSWORD': env("DB_PASSWORD", default="root"),
-        'HOST': env("DB_HOST", default="localhost"),
-        'PORT': env("DB_PORT", default="3306"),
+        'NAME': os.getenv("DB_NAME", "mydjango"),
+        'USER': os.getenv("DB_USER", "django_user"),
+        'PASSWORD': os.getenv("DB_PASSWORD", "root"),
+        'HOST': os.getenv("DB_HOST", "localhost"),
+        'PORT': os.getenv("DB_PORT", "3306"),
         'OPTIONS': {
             'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'raise_on_warnings': True,
         },
     }
 }
