@@ -13,8 +13,6 @@ docker start vm1
 docker stop vm1
 docker exec -it vm1 bash
 
-
-
 docker-compose -f docker-compose-with-code.yml up --build -d
 docker-compose -f docker-compose-with-code.yml down
 

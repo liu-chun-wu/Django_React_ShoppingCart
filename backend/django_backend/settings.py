@@ -22,19 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 import os
 
-# 設定 DEBUG，預設為 False
-DEBUG = os.getenv("DEBUG", "False")
-
 # 從 .env 讀取 SECRET_KEY
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # 設定 ALLOWED_HOSTS
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-
-# ALLOWED_HOSTS = ["*"]
+DEBUG = True
 
 # Application definition
 
@@ -55,18 +50,20 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS",
-                                 "http://localhost:8080").split(",")
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS",
-                                 "http://localhost:8080").split(",")
-CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOW_ALL_ORIGINS = False  # 允許所有前端訪問
+CORS_ALLOW_ALL_ORIGINS = True  # 允許所有前端訪問
+
+# CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS",
+#                                  "http://localhost:8080").split(",")
+# CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS",
+#                                  "http://localhost:8080").split(",")
+# CORS_ALLOW_CREDENTIALS = True
+
 
 TEMPLATES = [
     {

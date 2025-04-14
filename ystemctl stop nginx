@@ -1,0 +1,34 @@
+[0;1;32m●[0m nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: [0;1;32mactive (running)[0m since Mon 2025-04-14 13:55:09 CST; 7min ago
+       Docs: man:nginx(8)
+    Process: 366 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 422 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 423 (nginx)
+      Tasks: 21 (limit: 9297)
+     Memory: 25.3M
+     CGroup: /system.slice/nginx.service
+             ├─423 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+             ├─425 nginx: worker process
+             ├─426 nginx: worker process
+             ├─427 nginx: worker process
+             ├─428 nginx: worker process
+             ├─429 nginx: worker process
+             ├─430 nginx: worker process
+             ├─431 nginx: worker process
+             ├─432 nginx: worker process
+             ├─433 nginx: worker process
+             ├─434 nginx: worker process
+             ├─435 nginx: worker process
+             ├─436 nginx: worker process
+             ├─437 nginx: worker process
+             ├─438 nginx: worker process
+             ├─439 nginx: worker process
+             ├─440 nginx: worker process
+             ├─441 nginx: worker process
+             ├─442 nginx: worker process
+             ├─443 nginx: worker process
+             └─444 nginx: worker process
+
+Apr 14 13:55:09 LAPTOP-AT04G9I3 systemd[1]: Starting A high performance web server and a reverse proxy server...
+Apr 14 13:55:09 LAPTOP-AT04G9I3 systemd[1]: Started A high performance web server and a reverse proxy server.
