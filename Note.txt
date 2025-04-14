@@ -16,6 +16,9 @@ docker exec -it vm1 bash
 docker-compose -f docker-compose-with-code.yml up --build -d
 docker-compose -f docker-compose-with-code.yml down
 
+docker-compose -f docker-compose-with-image.yml up --build -d
+docker-compose -f docker-compose-with-image.yml down
+
 docker-compose -f docker-compose-with-code.yml restart backend
 docker-compose -f docker-compose-with-code.yml restart frontend
 
