@@ -3,7 +3,8 @@
 echo "Checking environment variables..."
 
 # 要檢查的環境變數清單
-REQUIRED_VARS=("DB_HOST" "DB_NAME" "DB_USER" "DB_PASSWORD" "DB_PORT")
+REQUIRED_VARS=("DB_HOST" "DB_NAME" "DB_USER" "DB_PASSWORD" "DB_PORT" "BACKEND_PORT" "BACKEND_API_URL_ADMIN_CHECKLOGIN" "BACKEND_API_URL_ADMIN_LOGIN" "BACKEND_API_URL_ADMIN_LOGOUT")
+
 
 # 檢查是否有遺漏的變數
 MISSING_VARS=()
@@ -51,5 +52,6 @@ python manage.py collectstatic --noinput \
   || { echo "FAILED: Collectstatic failed."; exit 1; }
 
 # 啟動 Gunicorn
-echo "Starting Gunicorn on port 8000..."
-exec gunicorn --bind 0.0.0.0:8000 django_backend.wsgi:application --workers 3 --timeout 120
+echo "Starting Gunicorn on port ${BACKEND_PORT}..."
+exec gunicorn --bind 0.0.0.0:${BACKEND_PORT} django_backend.wsgi:application --workers 3 --timeout 120
+

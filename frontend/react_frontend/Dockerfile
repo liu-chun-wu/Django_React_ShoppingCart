@@ -50,7 +50,7 @@ COPY --from=builder /app/dist .
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 開放 80 端口（HTTP）
-EXPOSE 8080
+EXPOSE 80
 
 # 啟動 Nginx 伺服器
 CMD ["nginx", "-g", "daemon off;"]
