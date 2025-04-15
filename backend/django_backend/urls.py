@@ -16,14 +16,30 @@ Including another URLconf
 from django.urls import path  # 引入 path 函數來定義路由
 from shop.views import *  # 匯入我們自定義的視圖模組，以便在路由中調用
 from rest_framework.routers import DefaultRouter
+import os
+from dotenv import load_dotenv
+# 載入 .env
+load_dotenv()
+
+# ✅ 環境變數檢查：必要變數若不存在則 raise error
+required_env_vars = [
+    'BACKEND_API_URL_ADMIN_LOGIN',
+    'BACKEND_API_URL_ADMIN_LOGOUT',
+    'BACKEND_API_URL_ADMIN_CHECKLOGIN'
+]
+
+missing_vars = [var for var in required_env_vars if os.getenv(var) is None]
+
+if missing_vars:
+    raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
 urlpatterns = [
     # 後台登入頁面
-    path('login/', admin_login, name='admin_login'),
+    path(os.getenv('BACKEND_API_URL_ADMIN_LOGIN'), admin_login, name='admin_login'),
 
     # 後台登出功能
-    path('logout/', admin_logout, name='admin_logout'),
-    path('check_login/', check_admin_login, name='check_admin_login'),
+    path(os.getenv('BACKEND_API_URL_ADMIN_LOGOUT'), admin_logout, name='admin_logout'),
+    path(os.getenv('BACKEND_API_URL_ADMIN_CHECKLOGIN'), check_admin_login, name='check_admin_login'),
 ]
 
 router = DefaultRouter()

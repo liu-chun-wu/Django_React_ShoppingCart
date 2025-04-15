@@ -21,12 +21,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
 import os
+from dotenv import load_dotenv
 
+# 載入 .env
+load_dotenv()
+
+# ✅ 檢查必要的環境變數是否存在
+required_env_vars = [
+    "SECRET_KEY",
+    "ALLOWED_HOSTS",
+    "DB_NAME",
+    "DB_USER",
+    "DB_PASSWORD",
+    "DB_HOST",
+    "DB_PORT",
+]
+
+missing_vars = [var for var in required_env_vars if os.getenv(var) is None]
+
+if missing_vars:
+    raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
+    
 # 從 .env 讀取 SECRET_KEY
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # 設定 ALLOWED_HOSTS
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -98,11 +118,11 @@ WSGI_APPLICATION = "django_backend.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': os.getenv("DB_NAME", "mydjango"),
-        'USER': os.getenv("DB_USER", "django_user"),
-        'PASSWORD': os.getenv("DB_PASSWORD", "root"),
-        'HOST': os.getenv("DB_HOST", "localhost"),
-        'PORT': os.getenv("DB_PORT", "3306"),
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
         'OPTIONS': {
             'charset': 'utf8mb4',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
