@@ -30,5 +30,8 @@ docker images -f "dangling=true" -q | xargs docker rmi -f
 docker push jeffery426/shoppingcart_backend:latest
 docker push jeffery426/shoppingcart_frontend:latest
 
+docker pull jeffery426/shoppingcart_backend:latest
+docker pull jeffery426/shoppingcart_frontend:latest
+
 docker logs django-backend
 docker logs react-frontend
