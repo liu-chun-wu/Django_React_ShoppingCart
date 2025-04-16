@@ -27,6 +27,8 @@ services:
     depends_on: [] # 🔹 因為 MySQL 在外部，所以不再依賴 `db`
     env_file:
       - .env
+    networks:
+      - shoppingcart-network
 
   frontend:
     build:
@@ -49,6 +51,11 @@ services:
       - static_volume:/usr/share/nginx/html/static
     env_file:
       - .env
+    networks:
+      - shoppingcart-network
 
 volumes:
   static_volume:
+
+networks:
+  shoppingcart-network:
